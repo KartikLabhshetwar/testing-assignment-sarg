@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../index.css";
 import Providers from "@/components/providers";
-import Header from "@/components/header";
+import { Sidebar } from "@/components/sidebar";
+import { ToasterProvider } from "@/components/toaster-provider";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -15,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-	title: "testing-assignment-sarg",
-	description: "testing-assignment-sarg",
+	title: "Business Intelligence Dashboard",
+	description: "Advanced data analytics, automated reporting, and business intelligence tools",
 };
 
 export default function RootLayout({
@@ -30,10 +31,13 @@ export default function RootLayout({
 				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
 			>
 				<Providers>
-					<div className="grid grid-rows-[auto_1fr] h-svh">
-						<Header />
-						{children}
+					<div className="flex h-screen bg-background">
+						<Sidebar />
+						<main className="flex-1 overflow-y-auto">
+							{children}
+						</main>
 					</div>
+					<ToasterProvider />
 				</Providers>
 			</body>
 		</html>
