@@ -1,21 +1,17 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "apps/web/package.json",
-      "use": "@vercel/next"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/apps/server/src/app/api/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/apps/web/$1"
-    }
-  ],
+  "buildCommand": "pnpm run db:generate && pnpm run build",
   "installCommand": "pnpm install --no-frozen-lockfile",
-  "buildCommand": "pnpm run db:generate && pnpm run build"
+  "outputDirectory": "apps/web/.next",
+  "functions": {
+    "apps/server/src/app/api/**/*.ts": {
+      "runtime": "nodejs18.x"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/apps/server/src/app/api/$1"
+    }
+  ]
 }
