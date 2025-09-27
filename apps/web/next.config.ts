@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
 	typescript: {
 		ignoreBuildErrors: true,
 	},
-	outputFileTracingRoot: '/Users/kartiklabhshetwar/Projects/testing-assignment-sarg',
+	outputFileTracingRoot: '../..',
 };
 
 export default nextConfig;
