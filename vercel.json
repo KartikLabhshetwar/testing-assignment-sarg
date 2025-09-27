@@ -9,14 +9,17 @@
       }
     },
     {
-      "src": "apps/server/src/app/api/**/*.ts",
-      "use": "@vercel/node"
+      "src": "apps/server/package.json",
+      "use": "@vercel/next",
+      "config": {
+        "distDir": ".next"
+      }
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/apps/server/src/app/api/$1"
+      "dest": "/apps/server/api/$1"
     },
     {
       "src": "/(.*)",
@@ -24,5 +27,5 @@
     }
   ],
   "installCommand": "pnpm install --no-frozen-lockfile",
-  "buildCommand": "pnpm run build"
+  "buildCommand": "pnpm run db:generate && pnpm run build"
 }
