@@ -88,9 +88,9 @@ export function CreateModal({ isOpen, onClose, onSubmit, title, schema, fields }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h2>
+          <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
           <Button variant="ghost" size="sm" onClick={handleClose}>
             <X className="h-4 w-4" />
           </Button>
@@ -99,7 +99,7 @@ export function CreateModal({ isOpen, onClose, onSubmit, title, schema, fields }
         <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4">
           {fields.map((field) => (
             <div key={field.name}>
-              <Label htmlFor={field.name} className="text-gray-700 dark:text-gray-300">
+              <Label htmlFor={field.name} className="text-gray-700">
                 {field.label}
                 {field.required && <span className="text-red-500 ml-1">*</span>}
               </Label>
@@ -108,8 +108,8 @@ export function CreateModal({ isOpen, onClose, onSubmit, title, schema, fields }
                   id={field.name}
                   {...register(field.name as any)}
                   className={`mt-1 w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                    (errors as any)[field.name] ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
-                  } bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
+                    (errors as any)[field.name] ? 'border-red-500' : 'border-gray-300'
+                  } bg-white text-gray-900`}
                 >
                   <option value="">{field.placeholder || `Select ${field.label.toLowerCase()}`}</option>
                   {field.options?.map((option) => (
