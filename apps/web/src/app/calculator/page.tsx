@@ -139,25 +139,26 @@ export default function CalculatorPage() {
   };
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="mb-6">
-        <div className="flex items-center justify-between">
+    <div className="p-8 space-y-12">
+      <div className="mb-12">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
           <div>
-            <h1 className="text-3xl font-bold flex items-center">
-              <Calculator className="h-8 w-8 mr-3" />
+            <h1 className="text-4xl font-bold flex items-center uppercase tracking-wide">
+              <Calculator className="h-10 w-10 mr-4" />
               Business Calculator
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-lg font-medium text-gray-600 mt-3">
               Calculate key business metrics and KPIs using your data. Adjust inputs to see real-time calculations.
             </p>
           </div>
-          <Button 
-            onClick={calculateMetrics} 
+          <Button
+            onClick={calculateMetrics}
             disabled={loading}
             variant="outline"
-            size="sm"
+            size="lg"
+            className="self-start lg:self-center"
           >
-            <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`h-5 w-5 mr-2 ${loading ? 'animate-spin' : ''}`} />
             {loading ? 'Calculating...' : 'Refresh'}
           </Button>
         </div>
@@ -172,10 +173,10 @@ export default function CalculatorPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {Object.entries(inputs).map(([key, value]) => (
-              <div key={key}>
-                <Label htmlFor={key} className="text-xs font-medium">
+              <div key={key} className="space-y-3">
+                <Label htmlFor={key} className="text-sm font-bold uppercase tracking-wide text-gray-700">
                   {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
                 </Label>
                 <Input
@@ -183,7 +184,7 @@ export default function CalculatorPage() {
                   type="number"
                   value={value}
                   onChange={(e) => handleInputChange(key as keyof typeof inputs, e.target.value)}
-                  className="text-sm"
+                  className="text-lg font-bold text-center"
                 />
               </div>
             ))}
@@ -194,45 +195,47 @@ export default function CalculatorPage() {
       {/* Results by Category */}
       {loading ? (
         <Card>
-          <CardContent className="p-8">
-            <div className="flex items-center justify-center space-x-2">
-              <RefreshCw className="h-6 w-6 animate-spin" />
-              <span>Calculating metrics...</span>
+          <CardContent className="p-16">
+            <div className="flex items-center justify-center space-x-4">
+              <RefreshCw className="h-10 w-10 animate-spin" />
+              <span className="text-2xl font-bold">Calculating metrics...</span>
             </div>
           </CardContent>
         </Card>
       ) : (
-        categories.map(category => (
-          <Card key={category}>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                {getCategoryIcon(category)}
-                <span className="ml-2">{category}</span>
-                <Badge variant="secondary" className="ml-2">
-                  {resultsByCategory[category]?.length || 0} metrics
-                </Badge>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {resultsByCategory[category]?.map((result, index) => (
-                  <div key={index} className="p-4 border rounded-lg bg-card hover:shadow-md transition-shadow">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="font-medium text-sm">{result.name}</h3>
-                      <Badge variant="outline" className="text-xs">
-                        {category}
-                      </Badge>
+        <div className="space-y-8">
+          {categories.map(category => (
+            <Card key={category}>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  {getCategoryIcon(category)}
+                  <span className="ml-3">{category}</span>
+                  <Badge variant="secondary" className="ml-3 text-base font-bold">
+                    {resultsByCategory[category]?.length || 0} metrics
+                  </Badge>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {resultsByCategory[category]?.map((result, index) => (
+                    <div key={index} className="p-8 border-4 border-black bg-white hover:bg-gray-50 transition-colors">
+                      <div className="flex items-center justify-between mb-6">
+                        <h3 className="font-bold text-lg uppercase tracking-wide">{result.name}</h3>
+                        <Badge variant="outline" className="text-sm font-bold">
+                          {category}
+                        </Badge>
+                      </div>
+                      <div className="text-4xl font-bold mb-6">
+                        {typeof result.value === 'string' ? result.value : result.value.toLocaleString()}
+                      </div>
+                      <p className="text-base text-gray-600 font-medium leading-relaxed">{result.description}</p>
                     </div>
-                    <div className="text-2xl font-bold mb-2">
-                      {typeof result.value === 'string' ? result.value : result.value.toLocaleString()}
-                    </div>
-                    <p className="text-xs text-muted-foreground">{result.description}</p>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        ))
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       )}
 
       {/* Summary */}
@@ -242,28 +245,28 @@ export default function CalculatorPage() {
             <CardTitle>Quick Insights</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="p-4 bg-green-50 rounded-lg">
-                <h3 className="font-medium text-green-800 mb-2">Financial Health</h3>
-                <ul className="text-sm text-green-700 space-y-1">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="p-8 bg-green-50 border-4 border-green-200">
+                <h3 className="font-bold text-green-800 mb-6 text-xl uppercase tracking-wide">Financial Health</h3>
+                <ul className="text-lg text-green-700 space-y-3 font-medium">
                   <li>• Gross Profit: ${insights.financialHealth.grossProfit.toLocaleString()}</li>
                   <li>• Current Ratio: {insights.financialHealth.currentRatio.toFixed(2)}</li>
                   <li>• Working Capital: ${insights.financialHealth.workingCapital.toLocaleString()}</li>
                   <li>• ROA: {insights.financialHealth.roa.toFixed(2)}%</li>
                 </ul>
               </div>
-              <div className="p-4 bg-blue-50 rounded-lg">
-                <h3 className="font-medium text-blue-800 mb-2">Growth Potential</h3>
-                <ul className="text-sm text-blue-700 space-y-1">
+              <div className="p-8 bg-blue-50 border-4 border-blue-200">
+                <h3 className="font-bold text-blue-800 mb-6 text-xl uppercase tracking-wide">Growth Potential</h3>
+                <ul className="text-lg text-blue-700 space-y-3 font-medium">
                   <li>• Sales Growth: {insights.growthPotential.salesGrowth}%</li>
                   <li>• LTV/CAC Ratio: {insights.growthPotential.ltvCacRatio.toFixed(1)}</li>
                   <li>• Customer Retention: {insights.growthPotential.customerRetention.toFixed(1)}%</li>
                   <li>• Market Penetration: {insights.growthPotential.marketPenetration}%</li>
                 </ul>
               </div>
-              <div className="p-4 bg-purple-50 rounded-lg">
-                <h3 className="font-medium text-purple-800 mb-2">Operational Efficiency</h3>
-                <ul className="text-sm text-purple-700 space-y-1">
+              <div className="p-8 bg-purple-50 border-4 border-purple-200">
+                <h3 className="font-bold text-purple-800 mb-6 text-xl uppercase tracking-wide">Operational Efficiency</h3>
+                <ul className="text-lg text-purple-700 space-y-3 font-medium">
                   <li>• Revenue/Employee: ${insights.operationalEfficiency.revenuePerEmployee.toLocaleString()}</li>
                   <li>• Inventory Turnover: {insights.operationalEfficiency.inventoryTurnover.toFixed(1)}</li>
                   <li>• Asset Turnover: {insights.operationalEfficiency.assetTurnover.toFixed(2)}</li>

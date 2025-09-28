@@ -38,31 +38,31 @@ export function Sidebar() {
   };
 
   return (
-    <div className="flex flex-col w-64 bg-card border-r h-full">
+    <div className="flex flex-col w-72 bg-white border-r-4 border-black h-full">
       {/* Logo */}
-      <div className="p-6 border-b">
+      <div className="p-8 border-b-4 border-black">
         <div className="flex items-center">
-          <BarChart3 className="h-8 w-8 text-primary mr-3" />
-          <h2 className="text-lg font-semibold">BI Dashboard</h2>
+          <BarChart3 className="h-10 w-10 text-black mr-4" />
+          <h2 className="text-xl font-bold uppercase tracking-wide">BI Dashboard</h2>
         </div>
       </div>
       
       {/* Navigation */}
-      <nav className="flex-1 px-4 py-6 space-y-2">
+      <nav className="flex-1 px-6 py-8 space-y-3">
         {navigation.map((item) => {
           const isActive = pathname === item.href || (pathname === '/' && item.href === '/dashboard');
           return (
             <Link
               key={item.name}
-              href={item.href}
+              href={item.href as any}
               className={cn(
-                'flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors',
+                'flex items-center px-4 py-4 text-base font-bold uppercase tracking-wide transition-all border-4',
                 isActive
-                  ? 'bg-primary text-primary-foreground shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                  ? 'bg-black text-white border-black'
+                  : 'text-black hover:bg-gray-100 border-transparent hover:border-gray-300'
               )}
             >
-              <item.icon className="mr-3 h-4 w-4" />
+              <item.icon className="mr-4 h-5 w-5" />
               {item.name}
             </Link>
           );
@@ -70,17 +70,17 @@ export function Sidebar() {
       </nav>
       
       {/* Footer */}
-      <div className="p-4 border-t space-y-2">
-        <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:text-foreground">
-          <Settings className="mr-3 h-4 w-4" />
+      <div className="p-6 border-t-4 border-black space-y-3">
+        <Button variant="ghost" className="w-full justify-start text-black hover:text-black">
+          <Settings className="mr-4 h-5 w-5" />
           Settings
         </Button>
         <Button 
           variant="ghost" 
-          className="w-full justify-start text-muted-foreground hover:text-foreground"
+          className="w-full justify-start text-black hover:text-black"
           onClick={handleSignOut}
         >
-          <LogOut className="mr-3 h-4 w-4" />
+          <LogOut className="mr-4 h-5 w-5" />
           Sign Out
         </Button>
       </div>

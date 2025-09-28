@@ -118,10 +118,10 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold">Dashboard</h1>
-        <p className="text-muted-foreground">
+    <div className="p-8 space-y-8">
+      <div className="mb-8">
+        <h1 className="text-4xl font-bold uppercase tracking-wide">Dashboard</h1>
+        <p className="text-lg font-medium text-gray-600 mt-2">
           Welcome to your Business Intelligence Dashboard. Here's an overview of your key metrics.
         </p>
       </div>
@@ -129,56 +129,56 @@ export default function DashboardPage() {
       {/* Key Metrics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Sales</CardTitle>
-            <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+            <CardTitle className="text-base font-bold uppercase tracking-wide">Total Sales</CardTitle>
+            <ShoppingCart className="h-6 w-6 text-black" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.sales.total.toLocaleString()}</div>
-            <div className="flex items-center text-xs text-green-600">
-              <TrendingUp className="h-3 w-3 mr-1" />
+            <div className="text-3xl font-bold">{stats.sales.total.toLocaleString()}</div>
+            <div className="flex items-center text-base text-green-600 font-medium">
+              <TrendingUp className="h-4 w-4 mr-2" />
               +{stats.sales.growth}% from last month
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+            <CardTitle className="text-base font-bold uppercase tracking-wide">Total Revenue</CardTitle>
+            <DollarSign className="h-6 w-6 text-black" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${stats.sales.revenue.toFixed(2)}</div>
-            <div className="flex items-center text-xs text-green-600">
-              <TrendingUp className="h-3 w-3 mr-1" />
+            <div className="text-3xl font-bold">${stats.sales.revenue.toFixed(2)}</div>
+            <div className="flex items-center text-base text-green-600 font-medium">
+              <TrendingUp className="h-4 w-4 mr-2" />
               +8.2% from last month
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Inventory Items</CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+            <CardTitle className="text-base font-bold uppercase tracking-wide">Inventory Items</CardTitle>
+            <Package className="h-6 w-6 text-black" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.inventory.total.toLocaleString()}</div>
-            <div className="flex items-center text-xs text-muted-foreground">
-              <CheckCircle className="h-3 w-3 mr-1" />
+            <div className="text-3xl font-bold">{stats.inventory.total.toLocaleString()}</div>
+            <div className="flex items-center text-base text-gray-600 font-medium">
+              <CheckCircle className="h-4 w-4 mr-2" />
               Total catalog size
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Low Stock Alerts</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+            <CardTitle className="text-base font-bold uppercase tracking-wide">Low Stock Alerts</CardTitle>
+            <AlertTriangle className="h-6 w-6 text-black" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600">{stats.inventory.lowStock}</div>
-            <div className="flex items-center text-xs text-red-600">
-              <TrendingDown className="h-3 w-3 mr-1" />
+            <div className="text-3xl font-bold text-red-600">{stats.inventory.lowStock}</div>
+            <div className="flex items-center text-base text-red-600 font-medium">
+              <TrendingDown className="h-4 w-4 mr-2" />
               Requires attention
             </div>
           </CardContent>
@@ -193,18 +193,18 @@ export default function DashboardPage() {
             <CardDescription>Latest sales transactions</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
+            <div className="space-y-6">
               {stats.recent.orders.map((order: any, index: number) => (
-                <div key={index} className="flex items-center justify-between">
+                <div key={index} className="flex items-center justify-between p-4 border-2 border-gray-200 bg-white">
                   <div>
-                    <div className="font-medium">{order.order_id}</div>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="font-bold text-base">{order.order_id}</div>
+                    <div className="text-base text-gray-600 font-medium">
                       {order.customer_name}
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="font-medium">${Number(order.total_amount).toFixed(2)}</div>
-                    <Badge variant="outline" className="text-xs">
+                    <div className="font-bold text-lg">${Number(order.total_amount).toFixed(2)}</div>
+                    <Badge variant="outline" className="text-sm font-bold">
                       {order.region}
                     </Badge>
                   </div>
@@ -220,26 +220,26 @@ export default function DashboardPage() {
             <CardDescription>Items requiring restocking</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
+            <div className="space-y-6">
               {stats.recent.alerts.length === 0 ? (
-                <div className="text-center py-4 text-muted-foreground">
-                  <CheckCircle className="h-8 w-8 mx-auto mb-2 text-green-500" />
-                  <p>All inventory levels are healthy!</p>
+                <div className="text-center py-8 text-gray-600">
+                  <CheckCircle className="h-12 w-12 mx-auto mb-4 text-green-500" />
+                  <p className="text-lg font-bold">All inventory levels are healthy!</p>
                 </div>
               ) : (
                 stats.recent.alerts.map((item: any, index: number) => (
-                  <div key={index} className="flex items-center justify-between">
+                  <div key={index} className="flex items-center justify-between p-4 border-2 border-gray-200 bg-white">
                     <div>
-                      <div className="font-medium">{item.product_name}</div>
-                      <div className="text-sm text-muted-foreground">
+                      <div className="font-bold text-base">{item.product_name}</div>
+                      <div className="text-base text-gray-600 font-medium">
                         {item.category}
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="font-medium text-red-600">
+                      <div className="font-bold text-lg text-red-600">
                         {item.stock_quantity} left
                       </div>
-                      <div className="text-xs text-muted-foreground">
+                      <div className="text-base text-gray-600 font-medium">
                         Reorder at {item.reorder_level}
                       </div>
                     </div>
@@ -255,19 +255,19 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Sales Performance</CardTitle>
+            <CardTitle className="text-xl font-bold uppercase tracking-wide">Sales Performance</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
+            <div className="space-y-4">
               <div className="flex justify-between">
-                <span className="text-sm">Average Order Value</span>
-                <span className="font-medium">
+                <span className="text-base font-bold">Average Order Value</span>
+                <span className="font-bold text-lg">
                   ${(stats.sales.revenue / stats.sales.total).toFixed(2)}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm">Growth Rate</span>
-                <span className="font-medium text-green-600">+{stats.sales.growth}%</span>
+                <span className="text-base font-bold">Growth Rate</span>
+                <span className="font-bold text-lg text-green-600">+{stats.sales.growth}%</span>
               </div>
             </div>
           </CardContent>
@@ -275,17 +275,17 @@ export default function DashboardPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Inventory Health</CardTitle>
+            <CardTitle className="text-xl font-bold uppercase tracking-wide">Inventory Health</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
+            <div className="space-y-4">
               <div className="flex justify-between">
-                <span className="text-sm">Total Value</span>
-                <span className="font-medium">${stats.inventory.value.toFixed(2)}</span>
+                <span className="text-base font-bold">Total Value</span>
+                <span className="font-bold text-lg">${stats.inventory.value.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm">Stock Status</span>
-                <Badge variant={stats.inventory.lowStock === 0 ? 'default' : 'destructive'}>
+                <span className="text-base font-bold">Stock Status</span>
+                <Badge variant={stats.inventory.lowStock === 0 ? 'default' : 'destructive'} className="text-sm font-bold">
                   {stats.inventory.lowStock === 0 ? 'Healthy' : `${stats.inventory.lowStock} Low`}
                 </Badge>
               </div>
@@ -295,20 +295,20 @@ export default function DashboardPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Quick Actions</CardTitle>
+            <CardTitle className="text-xl font-bold uppercase tracking-wide">Quick Actions</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
-              <a href="/sales" className="block text-sm text-blue-600 hover:underline">
+            <div className="space-y-4">
+              <a href="/sales" className="block text-base font-bold text-black hover:text-gray-600 border-b-2 border-transparent hover:border-black transition-colors">
                 → View Sales Data
               </a>
-              <a href="/inventory" className="block text-sm text-blue-600 hover:underline">
+              <a href="/inventory" className="block text-base font-bold text-black hover:text-gray-600 border-b-2 border-transparent hover:border-black transition-colors">
                 → Manage Inventory
               </a>
-              <a href="/reports" className="block text-sm text-blue-600 hover:underline">
+              <a href="/reports" className="block text-base font-bold text-black hover:text-gray-600 border-b-2 border-transparent hover:border-black transition-colors">
                 → Generate Reports
               </a>
-              <a href="/calculator" className="block text-sm text-blue-600 hover:underline">
+              <a href="/calculator" className="block text-base font-bold text-black hover:text-gray-600 border-b-2 border-transparent hover:border-black transition-colors">
                 → Business Calculator
               </a>
             </div>

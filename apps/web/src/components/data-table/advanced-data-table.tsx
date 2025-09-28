@@ -370,119 +370,122 @@ export function AdvancedDataTable<T>({
   const totalPages = Math.ceil(totalCount / pageSize);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* Toolbar */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <div className="relative">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              id="global-search"
-              placeholder="Search all columns..."
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-              className="pl-8 w-64"
-            />
-          </div>
-          
-          {Object.keys(rowSelection).length > 0 && (
-            <div className="flex items-center space-x-2">
-              <span className="text-sm text-muted-foreground">
-                {Object.keys(rowSelection).length} selected
-              </span>
-              <Button 
-                variant="destructive" 
-                size="sm"
-                onClick={handleBulkDelete}
-              >
-                <Trash2 className="h-4 w-4 mr-2" />
-                Delete Selected
-              </Button>
+      <div className="p-6 bg-white border-4 border-black">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <div className="relative">
+              <Search className="absolute left-4 top-4 h-5 w-5 text-gray-500" />
+              <Input
+                id="global-search"
+                placeholder="Search all columns..."
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                className="pl-12 w-80"
+              />
             </div>
-          )}
-        </div>
-
-        <div className="flex items-center space-x-2">
-          {onCreate && (
-            <Button variant="default" size="sm" onClick={handleCreate}>
-              <Plus className="h-4 w-4 mr-2" />
-              Create
-            </Button>
-          )}
-          <Button variant="outline" size="sm" onClick={handleImport}>
-            <Upload className="h-4 w-4 mr-2" />
-            Import
-          </Button>
-          <div className="relative group">
-            <Button variant="outline" size="sm">
-              <Download className="h-4 w-4 mr-2" />
-              Export
-            </Button>
-            <div className="absolute right-0 top-full mt-1 w-32 bg-white border rounded-md shadow-lg z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-              <button
-                className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 rounded-t-md"
-                onClick={() => handleExport('csv')}
-              >
-                Export as CSV
-              </button>
-              <button
-                className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 rounded-b-md"
-                onClick={() => handleExport('excel')}
-              >
-                Export as Excel
-              </button>
-            </div>
-          </div>
-          <div className="relative column-menu-container">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => setShowColumnMenu(!showColumnMenu)}
-            >
-              <Settings className="h-4 w-4 mr-2" />
-              Columns
-            </Button>
-            {showColumnMenu && (
-              <div className="absolute right-0 top-full mt-1 w-48 bg-white border rounded-md shadow-lg z-10">
-                <div className="p-2">
-                  <div className="text-xs font-medium text-gray-500 mb-2">Show/Hide Columns</div>
-                  {table.getAllColumns()
-                    .filter(column => column.getCanHide())
-                    .map(column => (
-                      <label key={column.id} className="flex items-center space-x-2 py-1">
-                        <input
-                          type="checkbox"
-                          checked={column.getIsVisible()}
-                          onChange={() => toggleColumnVisibility(column.id)}
-                          className="rounded"
-                        />
-                        <span className="text-sm">{column.columnDef.header as string}</span>
-                      </label>
-                    ))}
-                </div>
+            
+            {Object.keys(rowSelection).length > 0 && (
+              <div className="flex items-center space-x-4">
+                <span className="text-base font-bold text-black">
+                  {Object.keys(rowSelection).length} selected
+                </span>
+                <Button 
+                  variant="destructive" 
+                  size="sm"
+                  onClick={handleBulkDelete}
+                  className="whitespace-nowrap"
+                >
+                  <Trash2 className="h-5 w-5 mr-2" />
+                  Delete Selected
+                </Button>
               </div>
             )}
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            {onCreate && (
+              <Button variant="default" size="sm" onClick={handleCreate}>
+                <Plus className="h-5 w-5 mr-2" />
+                Create
+              </Button>
+            )}
+            <Button variant="outline" size="sm" onClick={handleImport}>
+              <Upload className="h-5 w-5 mr-2" />
+              Import
+            </Button>
+            <div className="relative group">
+              <Button variant="outline" size="sm">
+                <Download className="h-5 w-5 mr-2" />
+                Export
+              </Button>
+              <div className="absolute right-0 top-full mt-2 w-40 bg-white border-4 border-black z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                <button
+                  className="w-full px-4 py-3 text-left text-base font-bold hover:bg-gray-100 border-b-2 border-gray-200"
+                  onClick={() => handleExport('csv')}
+                >
+                  Export as CSV
+                </button>
+                <button
+                  className="w-full px-4 py-3 text-left text-base font-bold hover:bg-gray-100"
+                  onClick={() => handleExport('excel')}
+                >
+                  Export as Excel
+                </button>
+              </div>
+            </div>
+            <div className="relative column-menu-container">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setShowColumnMenu(!showColumnMenu)}
+              >
+                <Settings className="h-5 w-5 mr-2" />
+                Columns
+              </Button>
+              {showColumnMenu && (
+                <div className="absolute right-0 top-full mt-2 w-56 bg-white border-4 border-black z-10">
+                  <div className="p-4">
+                    <div className="text-base font-bold text-black mb-4 uppercase tracking-wide">Show/Hide Columns</div>
+                    {table.getAllColumns()
+                      .filter(column => column.getCanHide())
+                      .map(column => (
+                        <label key={column.id} className="flex items-center space-x-3 py-2">
+                          <input
+                            type="checkbox"
+                            checked={column.getIsVisible()}
+                            onChange={() => toggleColumnVisibility(column.id)}
+                            className="w-4 h-4 border-2 border-black"
+                          />
+                          <span className="text-base font-medium">{column.columnDef.header as string}</span>
+                        </label>
+                      ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
 
       {/* Table */}
-      <div className="rounded-lg border bg-white shadow-sm">
+      <div className="border-4 border-black bg-white">
         <div
           ref={tableContainerRef}
           className="h-[600px] overflow-auto"
           style={{ contain: 'strict' }}
         >
           <table className="w-full">
-            <thead className="sticky top-0 bg-gray-50 z-10">
+            <thead className="sticky top-0 bg-gray-100 z-10">
               {table.getHeaderGroups().map((headerGroup) => (
-                <tr key={headerGroup.id} className="border-b">
+                <tr key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (
                     <th
                       key={header.id}
                       className={cn(
-                        "px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider relative",
-                        header.column.getCanSort() && "cursor-pointer hover:bg-gray-100"
+                        "px-6 py-4 text-left text-base font-bold text-black uppercase tracking-wide relative",
+                        header.column.getCanSort() && "cursor-pointer hover:bg-gray-200"
                       )}
                       style={{ width: header.getSize() }}
                       onClick={header.column.getToggleSortingHandler()}
@@ -517,10 +520,10 @@ export function AdvancedDataTable<T>({
             <tbody className="bg-white">
               {loading ? (
                 <tr>
-                  <td colSpan={columns.length} className="text-center py-8">
-                    <div className="flex items-center justify-center space-x-2">
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                      <span>Loading...</span>
+                  <td colSpan={columns.length} className="text-center py-12">
+                    <div className="flex items-center justify-center space-x-3">
+                      <div className="animate-spin rounded-full h-8 w-8 border-4 border-black border-t-transparent"></div>
+                      <span className="text-lg font-bold">Loading...</span>
                     </div>
                   </td>
                 </tr>
@@ -532,7 +535,7 @@ export function AdvancedDataTable<T>({
                       key={row.id}
                       className={cn(
                         "hover:bg-gray-50 transition-colors",
-                        row.getIsSelected() && "bg-blue-50"
+                        row.getIsSelected() && "bg-gray-100"
                       )}
                       style={{
                         height: `${virtualRow.size}px`,
@@ -542,7 +545,7 @@ export function AdvancedDataTable<T>({
                       {row.getVisibleCells().map((cell) => (
                         <td
                           key={cell.id}
-                          className="px-4 py-4 text-sm text-gray-900"
+                          className="px-6 py-4 text-base font-medium text-black"
                           style={{ width: cell.column.getSize() }}
                         >
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -558,35 +561,35 @@ export function AdvancedDataTable<T>({
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-200">
-        <div className="flex items-center space-x-2">
-          <p className="text-sm text-gray-700">
+      <div className="flex items-center justify-between px-6 py-4 bg-white border-t-4 border-black">
+        <div className="flex items-center space-x-4">
+          <p className="text-base font-bold text-black">
             Showing {(currentPage - 1) * pageSize + 1} to{' '}
             {Math.min(currentPage * pageSize, totalCount)} of {totalCount} results
           </p>
         </div>
         
-        <div className="flex items-center space-x-1">
+        <div className="flex items-center space-x-2">
           <Button
             variant="outline"
             size="sm"
             onClick={() => onPageChange(1)}
             disabled={currentPage === 1}
-            className="h-8 w-8 p-0"
+            className="h-10 w-10 p-0"
           >
-            <ChevronsLeft className="h-4 w-4" />
+            <ChevronsLeft className="h-5 w-5" />
           </Button>
           <Button
             variant="outline"
             size="sm"
             onClick={() => onPageChange(currentPage - 1)}
             disabled={currentPage === 1}
-            className="h-8 w-8 p-0"
+            className="h-10 w-10 p-0"
           >
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft className="h-5 w-5" />
           </Button>
           
-          <span className="text-sm text-gray-700 px-3">
+          <span className="text-base font-bold text-black px-4">
             Page {currentPage} of {totalPages}
           </span>
           
@@ -595,18 +598,18 @@ export function AdvancedDataTable<T>({
             size="sm"
             onClick={() => onPageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className="h-8 w-8 p-0"
+            className="h-10 w-10 p-0"
           >
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-5 w-5" />
           </Button>
           <Button
             variant="outline"
             size="sm"
             onClick={() => onPageChange(totalPages)}
             disabled={currentPage === totalPages}
-            className="h-8 w-8 p-0"
+            className="h-10 w-10 p-0"
           >
-            <ChevronsRight className="h-4 w-4" />
+            <ChevronsRight className="h-5 w-5" />
           </Button>
         </div>
       </div>
