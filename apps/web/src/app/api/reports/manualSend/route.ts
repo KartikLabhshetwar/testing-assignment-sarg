@@ -1,7 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generatePdfReport } from '@/lib/reportGenerator';
-import { sendEmail } from '@/lib/emailService';
-import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 
 const ManualSendSchema = z.object({
@@ -15,47 +12,30 @@ export async function POST(request: NextRequest) {
     
     console.log('Starting manual report generation...');
     
-    const timestamp = new Date().toISOString();
-    
-    // Generate report data
-    const reportData = await generateReportData();
-    
-    // Generate PDF
-    const pdfBuffer = await generatePdfReport(reportData);
-    
-    // Send email
-    const emailRecipient = recipient || process.env.REPORT_RECIPIENT || 'hello@sarg.io';
-    const subject = `Manual Business Report - ${timestamp}`;
-    
-    const emailResult = await sendEmail({
-      to: emailRecipient,
-      subject,
-      text: 'Please find the attached business report.',
-      attachments: [{
-        filename: `manual-report-${Date.now()}.pdf`,
-        content: pdfBuffer,
-        contentType: 'application/pdf'
-      }]
+    // Call the cron endpoint to generate and send the report
+    const cronUrl = new URL('/api/cron/sendReport', request.url);
+    const cronResponse = await fetch(cronUrl.toString(), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.CRON_SECRET || 'dev-secret'}`,
+      },
+      body: JSON.stringify({ trigger: 'manual' }),
     });
     
-    // Log the email send attempt
-    await prisma.emailLogs.create({
-      data: {
-        to: emailRecipient,
-        subject,
-        status: emailResult.success ? 'sent' : 'failed',
-        error: emailResult.error || null,
-        timestamp: new Date()
-      }
-    });
+    const cronResult = await cronResponse.json();
     
-    console.log(`✅ Manual report sent successfully to ${emailRecipient}`);
+    if (!cronResult.success) {
+      throw new Error(cronResult.error || 'Failed to generate report');
+    }
+    
+    console.log(`✅ Manual report sent successfully`);
     
     return NextResponse.json({
       success: true,
-      message: `Report sent successfully to ${emailRecipient}`,
-      timestamp,
-      recipient: emailRecipient
+      message: `Report sent successfully`,
+      timestamp: cronResult.timestamp,
+      summary: cronResult.summary,
     });
     
   } catch (error) {
@@ -82,49 +62,13 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function generateReportData() {
-  const [salesData, inventoryData] = await Promise.all([
-    prisma.sales.findMany({
-      take: 100,
-      orderBy: { order_date: 'desc' }
-    }),
-    prisma.inventory.findMany({
-      take: 100,
-      orderBy: { last_restocked: 'desc' }
-    })
-  ]);
-
-  const totalSales = await prisma.sales.aggregate({
-    _sum: { total_amount: true },
-    _count: { id: true }
-  });
-
-  const lowStockItems = await prisma.inventory.findMany({
-    where: {
-      stock_quantity: {
-        lte: 10 // Default reorder level threshold
-      }
-    }
-  });
-
-  return {
-    salesData,
-    inventoryData,
-    summary: {
-      totalSalesAmount: totalSales._sum.total_amount || 0,
-      totalSalesCount: totalSales._count.id || 0,
-      lowStockCount: lowStockItems.length
-    },
-    generatedAt: new Date().toISOString()
-  };
-}
-
 export async function GET(request: NextRequest) {
   try {
     // Return recent email logs
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get('limit') || '10');
     
+    const { prisma } = await import('@/lib/prisma');
     const recentLogs = await prisma.emailLogs.findMany({
       orderBy: { timestamp: 'desc' },
       take: limit,

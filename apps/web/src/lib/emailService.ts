@@ -7,7 +7,7 @@ interface EmailOptions {
   html?: string;
   attachments?: Array<{
     filename: string;
-    content: Buffer;
+    content: Buffer | string;
     contentType: string;
   }>;
 }
