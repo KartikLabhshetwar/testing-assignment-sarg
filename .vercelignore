@@ -10,3 +10,9 @@ apps/server/seed
 apps/server/scripts
 test-*.js
 setup-*.js
+apps/web/seed
+apps/web/prisma/migrations
+apps/web/.next
+apps/web/out
+*.md
+.DS_Store

@@ -1,51 +1,61 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generatePdfReport, sendEmailReport, generateReportSummary } from '@/lib/reportGenerator';
-import prisma from '@/lib/prisma';
+import { generatePdfReport } from '@/lib/reportGenerator';
+import { sendEmail } from '@/lib/emailService';
+import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 
 const ManualSendSchema = z.object({
-  reportConfigId: z.string().optional(),
   recipient: z.string().email().optional(),
 });
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { reportConfigId, recipient } = ManualSendSchema.parse(body);
+    const { recipient } = ManualSendSchema.parse(body);
     
     console.log('Starting manual report generation...');
     
-    const reportId = `manual-${Date.now()}`;
     const timestamp = new Date().toISOString();
     
-    // Generate report summary
-    const summary = await generateReportSummary();
-    
-    // For now, create a simple HTML report URL
-    // In production, this would render based on reportConfigId
-    const reportUrl = `${process.env.NEXTAUTH_URL}/reports/render?id=${reportId}&config=${reportConfigId || 'default'}`;
+    // Generate report data
+    const reportData = await generateReportData();
     
     // Generate PDF
-    const pdfBuffer = await generatePdfReport(reportId, reportUrl);
+    const pdfBuffer = await generatePdfReport(reportData);
     
     // Send email
     const emailRecipient = recipient || process.env.REPORT_RECIPIENT || 'hello@sarg.io';
     const subject = `Manual Business Report - ${timestamp}`;
     
-    const emailResult = await sendEmailReport(emailRecipient, subject, pdfBuffer, summary);
+    const emailResult = await sendEmail({
+      to: emailRecipient,
+      subject,
+      text: 'Please find the attached business report.',
+      attachments: [{
+        filename: `manual-report-${Date.now()}.pdf`,
+        content: pdfBuffer,
+        contentType: 'application/pdf'
+      }]
+    });
+    
+    // Log the email send attempt
+    await prisma.emailLogs.create({
+      data: {
+        to: emailRecipient,
+        subject,
+        status: emailResult.success ? 'sent' : 'failed',
+        error: emailResult.error || null,
+        timestamp: new Date()
+      }
+    });
     
     console.log(`✅ Manual report sent successfully to ${emailRecipient}`);
     
     return NextResponse.json({
       success: true,
       message: `Report sent successfully to ${emailRecipient}`,
-      details: {
-        reportId,
-        timestamp,
-        recipient: emailRecipient,
-        emailId: emailResult.messageId,
-        pdfSize: pdfBuffer.length
-      }
+      timestamp,
+      recipient: emailRecipient
     });
     
   } catch (error) {
@@ -70,6 +80,43 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+async function generateReportData() {
+  const [salesData, inventoryData] = await Promise.all([
+    prisma.sales.findMany({
+      take: 100,
+      orderBy: { order_date: 'desc' }
+    }),
+    prisma.inventory.findMany({
+      take: 100,
+      orderBy: { last_restocked: 'desc' }
+    })
+  ]);
+
+  const totalSales = await prisma.sales.aggregate({
+    _sum: { total_amount: true },
+    _count: { id: true }
+  });
+
+  const lowStockItems = await prisma.inventory.findMany({
+    where: {
+      stock_quantity: {
+        lte: 10 // Default reorder level threshold
+      }
+    }
+  });
+
+  return {
+    salesData,
+    inventoryData,
+    summary: {
+      totalSalesAmount: totalSales._sum.total_amount || 0,
+      totalSalesCount: totalSales._count.id || 0,
+      lowStockCount: lowStockItems.length
+    },
+    generatedAt: new Date().toISOString()
+  };
 }
 
 export async function GET(request: NextRequest) {

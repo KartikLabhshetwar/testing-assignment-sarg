@@ -13,9 +13,7 @@ import {
   XCircle, 
   Mail, 
   Calendar,
-  Download,
-  Play,
-  Square
+  Play
 } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -28,22 +26,15 @@ interface EmailLog {
   error?: string;
 }
 
-interface CronStatus {
-  running: boolean;
-  schedule: string;
-  nextRun: string | null;
-}
-
 export default function ReportsPage() {
   const [loading, setLoading] = useState(false);
   const [emailLogs, setEmailLogs] = useState<EmailLog[]>([]);
-  const [cronStatus, setCronStatus] = useState<CronStatus | null>(null);
   const [manualRecipient, setManualRecipient] = useState('hello@sarg.io');
   const [lastResult, setLastResult] = useState<any>(null);
 
   const fetchEmailLogs = async () => {
     try {
-      const response = await fetch('/api/reports/manualSend?limit=10');
+      const response = await fetch('/api/email-logs');
       const data = await response.json();
       setEmailLogs(data.logs || []);
     } catch (error) {
@@ -51,26 +42,8 @@ export default function ReportsPage() {
     }
   };
 
-  const fetchCronStatus = async () => {
-    try {
-      const response = await fetch('/api/crons/sendReport?action=status');
-      const data = await response.json();
-      setCronStatus(data);
-    } catch (error) {
-      console.error('Failed to fetch CRON status:', error);
-    }
-  };
-
   useEffect(() => {
     fetchEmailLogs();
-    fetchCronStatus();
-    
-    // Refresh status every 30 seconds
-    const interval = setInterval(() => {
-      fetchCronStatus();
-    }, 30000);
-
-    return () => clearInterval(interval);
   }, []);
 
   const handleManualSend = async () => {
@@ -101,24 +74,27 @@ export default function ReportsPage() {
     }
   };
 
-  const handleCronAction = async (action: 'start' | 'stop' | 'test') => {
+  const handleTestCron = async () => {
+    setLoading(true);
     try {
-      const url = action === 'test' 
-        ? '/api/crons/sendReport?action=test'
-        : `/api/crons/sendReport?action=${action}`;
-        
-      const response = await fetch(url);
+      const response = await fetch('/api/cron', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_CRON_SECRET || 'test-secret'}`,
+        },
+      });
+
       const result = await response.json();
+      setLastResult(result);
       
-      if (action === 'test') {
-        setLastResult(result);
+      if (result.success) {
         setTimeout(fetchEmailLogs, 1000);
       }
-      
-      // Refresh status
-      fetchCronStatus();
     } catch (error) {
-      console.error(`Failed to ${action} CRON job:`, error);
+      console.error('Failed to test cron:', error);
+      setLastResult({ success: false, error: 'Cron test failed' });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -143,54 +119,26 @@ export default function ReportsPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-            <div className="flex items-center space-x-2">
-              <Label>Status:</Label>
-              <Badge variant={cronStatus?.running ? 'default' : 'secondary'}>
-                {cronStatus?.running ? 'Running' : 'Stopped'}
-              </Badge>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div className="flex items-center space-x-2">
               <Label>Schedule:</Label>
-              <span className="text-sm font-mono">{cronStatus?.schedule || 'N/A'}</span>
+              <span className="text-sm font-mono">Every hour at minute 0</span>
             </div>
             <div className="flex items-center space-x-2">
-              <Label>Next Run:</Label>
-              <span className="text-sm">
-                {cronStatus?.nextRun 
-                  ? format(new Date(cronStatus.nextRun), 'PPp')
-                  : 'N/A'
-                }
-              </span>
+              <Label>Status:</Label>
+              <Badge variant="default">Active (Vercel Cron)</Badge>
             </div>
           </div>
           
           <div className="flex space-x-2">
             <Button
-              onClick={() => handleCronAction('start')}
-              disabled={cronStatus?.running}
+              onClick={handleTestCron}
+              disabled={loading}
               size="sm"
               variant="outline"
             >
               <Play className="h-4 w-4 mr-2" />
-              Start
-            </Button>
-            <Button
-              onClick={() => handleCronAction('stop')}
-              disabled={!cronStatus?.running}
-              size="sm"
-              variant="outline"
-            >
-              <Square className="h-4 w-4 mr-2" />
-              Stop
-            </Button>
-            <Button
-              onClick={() => handleCronAction('test')}
-              size="sm"
-              variant="outline"
-            >
-              <Send className="h-4 w-4 mr-2" />
-              Test Run
+              Test Cron Job
             </Button>
           </div>
         </CardContent>
@@ -246,13 +194,12 @@ export default function ReportsPage() {
                   <XCircle className="h-5 w-5 text-red-600 mr-2" />
                 )}
                 <span className={lastResult.success ? 'text-green-800' : 'text-red-800'}>
-                  {lastResult.success ? lastResult.message : `Error: ${lastResult.error || lastResult.details}`}
+                  {lastResult.success ? lastResult.message : `Error: ${lastResult.error}`}
                 </span>
               </div>
-              {lastResult.success && lastResult.details && (
+              {lastResult.success && lastResult.timestamp && (
                 <div className="mt-2 text-sm text-green-700">
-                  <p>Report ID: {lastResult.details.reportId}</p>
-                  <p>PDF Size: {(lastResult.details.pdfSize / 1024).toFixed(1)} KB</p>
+                  <p>Generated at: {new Date(lastResult.timestamp).toLocaleString()}</p>
                 </div>
               )}
             </div>
