@@ -7,7 +7,7 @@
   ],
   "scripts": {
     "dev": "cd apps/web && pnpm run dev",
-    "build": "cd apps/web && pnpm run build",
+    "build": "cd apps/web && pnpm run db:generate && pnpm run build",
     "start": "cd apps/web && pnpm run start",
     "db:push": "cd apps/web && pnpm run db:push",
     "db:studio": "cd apps/web && pnpm run db:studio",
