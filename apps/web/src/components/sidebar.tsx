@@ -30,15 +30,25 @@ export function Sidebar() {
 
   const handleSignOut = async () => {
     try {
-      await authClient.signOut({
+      const { data, error } = await authClient.signOut({
         fetchOptions: {
           onSuccess: () => {
             router.push('/');
           },
+          onError: (ctx) => {
+            console.error('Sign out error:', ctx.error);
+            alert(`Sign out failed: ${ctx.error.message}`);
+          },
         },
       });
+      
+      if (error) {
+        console.error('Sign out error:', error);
+        alert(`Sign out failed: ${error.message}`);
+      }
     } catch (error) {
       console.error('Sign out failed:', error);
+      alert('Sign out failed. Please try again.');
     }
   };
 

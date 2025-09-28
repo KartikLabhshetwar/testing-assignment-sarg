@@ -25,6 +25,13 @@ export const auth = betterAuth<BetterAuthOptions>({
 	emailAndPassword: {
 		enabled: true,
 	},
+	onAPIError: {
+		throw: false,
+		onError: (error, ctx) => {
+			console.error("Better Auth API Error:", error);
+			console.error("Context:", ctx);
+		},
+	},
 	advanced: {
 		defaultCookieAttributes: {
 			sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
