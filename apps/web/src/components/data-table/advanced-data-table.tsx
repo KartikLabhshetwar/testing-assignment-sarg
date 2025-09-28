@@ -82,6 +82,7 @@ export function AdvancedDataTable<T>({
   const [globalFilter, setGlobalFilter] = useState('');
   const [columnSizing, setColumnSizing] = useState<ColumnSizingState>({});
   const [columnOrder, setColumnOrder] = useState<string[]>([]);
+  const [showColumnMenu, setShowColumnMenu] = useState(false);
 
   // CRUD Operations
   const handleDelete = async (ids: string[]) => {
@@ -119,6 +120,77 @@ export function AdvancedDataTable<T>({
     if (onCreate) {
       onCreate();
     }
+  };
+
+  // Export functionality
+  const handleExport = async (format: 'csv' | 'excel') => {
+    try {
+      const params = new URLSearchParams({
+        format,
+        search: globalFilter,
+      });
+
+      // Add current filters
+      if (columnFilters.length > 0) {
+        const filterObj: Record<string, any> = {};
+        columnFilters.forEach(filter => {
+          filterObj[filter.id] = filter.value;
+        });
+        if (Object.keys(filterObj).length > 0) {
+          params.append('filter', JSON.stringify(filterObj));
+        }
+      }
+
+      const response = await fetch(`${apiEndpoint}/export?${params}`);
+      
+      if (!response.ok) {
+        throw new Error('Export failed');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${tableId}-export-${new Date().toISOString().split('T')[0]}.${format === 'excel' ? 'xlsx' : 'csv'}`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      toast.success(`Data exported as ${format.toUpperCase()}`);
+    } catch (error) {
+      console.error('Export error:', error);
+      toast.error('Failed to export data');
+    }
+  };
+
+  // Import functionality
+  const handleImport = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.csv,.xlsx,.xls';
+    input.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+
+      try {
+        toast.info('Import functionality coming soon!');
+        // TODO: Implement import functionality
+        console.log('Import file:', file);
+      } catch (error) {
+        console.error('Import error:', error);
+        toast.error('Failed to import data');
+      }
+    };
+    input.click();
+  };
+
+  // Column visibility toggle
+  const toggleColumnVisibility = (columnId: string) => {
+    setColumnVisibility(prev => ({
+      ...prev,
+      [columnId]: !prev[columnId]
+    }));
   };
 
   // Debounced search
@@ -203,10 +275,22 @@ export function AdvancedDataTable<T>({
     return () => clearTimeout(timer);
   }, [savePreferences]);
 
+  // Close column menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (showColumnMenu && !(event.target as Element).closest('.column-menu-container')) {
+        setShowColumnMenu(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showColumnMenu]);
+
   const table = useReactTable({
     data,
     columns,
-    getRowId: (row) => row.id.toString(),
+    getRowId: (row) => (row as any).id.toString(),
     state: {
       sorting,
       columnFilters,
@@ -325,18 +409,60 @@ export function AdvancedDataTable<T>({
               Create
             </Button>
           )}
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={handleImport}>
             <Upload className="h-4 w-4 mr-2" />
             Import
           </Button>
-          <Button variant="outline" size="sm">
-            <Download className="h-4 w-4 mr-2" />
-            Export
-          </Button>
-          <Button variant="outline" size="sm">
-            <Settings className="h-4 w-4 mr-2" />
-            Columns
-          </Button>
+          <div className="relative group">
+            <Button variant="outline" size="sm">
+              <Download className="h-4 w-4 mr-2" />
+              Export
+            </Button>
+            <div className="absolute right-0 top-full mt-1 w-32 bg-white border rounded-md shadow-lg z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+              <button
+                className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 rounded-t-md"
+                onClick={() => handleExport('csv')}
+              >
+                Export as CSV
+              </button>
+              <button
+                className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 rounded-b-md"
+                onClick={() => handleExport('excel')}
+              >
+                Export as Excel
+              </button>
+            </div>
+          </div>
+          <div className="relative column-menu-container">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setShowColumnMenu(!showColumnMenu)}
+            >
+              <Settings className="h-4 w-4 mr-2" />
+              Columns
+            </Button>
+            {showColumnMenu && (
+              <div className="absolute right-0 top-full mt-1 w-48 bg-white border rounded-md shadow-lg z-10">
+                <div className="p-2">
+                  <div className="text-xs font-medium text-gray-500 mb-2">Show/Hide Columns</div>
+                  {table.getAllColumns()
+                    .filter(column => column.getCanHide())
+                    .map(column => (
+                      <label key={column.id} className="flex items-center space-x-2 py-1">
+                        <input
+                          type="checkbox"
+                          checked={column.getIsVisible()}
+                          onChange={() => toggleColumnVisibility(column.id)}
+                          className="rounded"
+                        />
+                        <span className="text-sm">{column.columnDef.header as string}</span>
+                      </label>
+                    ))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
