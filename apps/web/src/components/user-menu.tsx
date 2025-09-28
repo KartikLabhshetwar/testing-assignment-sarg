@@ -11,10 +11,12 @@ import { Button } from "./ui/button";
 import { Skeleton } from "./ui/skeleton";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useState } from "react";
 
 export default function UserMenu() {
 	const router = useRouter();
 	const { data: session, isPending } = authClient.useSession();
+	const [isSigningOut, setIsSigningOut] = useState(false);
 
 	if (isPending) {
 		return <Skeleton className="h-9 w-24" />;
@@ -27,6 +29,18 @@ export default function UserMenu() {
 			</Button>
 		);
 	}
+
+	const handleSignOut = async () => {
+		try {
+			setIsSigningOut(true);
+			await authClient.signOut();
+			router.push("/");
+		} catch (error) {
+			console.error("Sign out error:", error);
+		} finally {
+			setIsSigningOut(false);
+		}
+	};
 
 	return (
 		<DropdownMenu>
@@ -41,17 +55,10 @@ export default function UserMenu() {
 					<Button
 						variant="destructive"
 						className="w-full"
-						onClick={() => {
-							authClient.signOut({
-								fetchOptions: {
-									onSuccess: () => {
-										router.push("/");
-									},
-								},
-							});
-						}}
+						onClick={handleSignOut}
+						disabled={isSigningOut}
 					>
-						Sign Out
+						{isSigningOut ? "Signing Out..." : "Sign Out"}
 					</Button>
 				</DropdownMenuItem>
 			</DropdownMenuContent>
