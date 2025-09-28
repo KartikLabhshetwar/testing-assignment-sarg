@@ -33,8 +33,13 @@ export default function UserMenu() {
 	const handleSignOut = async () => {
 		try {
 			setIsSigningOut(true);
-			await authClient.signOut();
-			router.push("/");
+			await authClient.signOut({
+				fetchOptions: {
+					onSuccess: () => {
+						router.push("/");
+					},
+				},
+			});
 		} catch (error) {
 			console.error("Sign out error:", error);
 		} finally {
