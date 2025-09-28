@@ -19,9 +19,16 @@ export async function POST(request: NextRequest) {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${process.env.CRON_SECRET || 'dev-secret'}`,
+        'Cookie': request.headers.get('cookie') || '',
       },
       body: JSON.stringify({ trigger: 'manual' }),
     });
+    
+    if (!cronResponse.ok) {
+      const errorText = await cronResponse.text();
+      console.error('Cron endpoint error:', cronResponse.status, errorText);
+      throw new Error(`Cron endpoint failed: ${cronResponse.status} - ${errorText}`);
+    }
     
     const cronResult = await cronResponse.json();
     
@@ -45,7 +52,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: 'Validation failed', 
-          details: error.errors 
+          details: error.issues 
         },
         { status: 400 }
       );
