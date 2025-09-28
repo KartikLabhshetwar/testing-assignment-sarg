@@ -39,6 +39,7 @@ export function CreateModal({ isOpen, onClose, onSubmit, title, schema, fields }
     resolver: zodResolver(schema),
     mode: 'onBlur',
     defaultValues: {
+      // Sales defaults
       discount_percentage: 0,
       quantity: 1,
       unit_price: '',
@@ -50,7 +51,19 @@ export function CreateModal({ isOpen, onClose, onSubmit, title, schema, fields }
       payment_method: '',
       order_date: new Date().toISOString().split('T')[0],
       delivery_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 7 days from now
-      region: ''
+      region: '',
+      // Inventory defaults
+      category: '',
+      sub_category: '',
+      stock_quantity: 0,
+      reserved_quantity: 0,
+      reorder_level: 10,
+      unit_cost: '',
+      selling_price: '',
+      supplier_name: '',
+      supplier_contact: '',
+      last_restocked: new Date().toISOString().split('T')[0],
+      expiry_date: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 1 year from now
     }
   });
 
@@ -93,9 +106,9 @@ export function CreateModal({ isOpen, onClose, onSubmit, title, schema, fields }
               {field.type === 'select' ? (
                 <select
                   id={field.name}
-                  {...register(field.name)}
+                  {...register(field.name as any)}
                   className={`mt-1 w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                    errors[field.name] ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                    (errors as any)[field.name] ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                   } bg-white dark:bg-gray-700 text-gray-900 dark:text-white`}
                 >
                   <option value="">{field.placeholder || `Select ${field.label.toLowerCase()}`}</option>
@@ -109,18 +122,18 @@ export function CreateModal({ isOpen, onClose, onSubmit, title, schema, fields }
                 <Input
                   id={field.name}
                   type={field.type}
-                  {...register(field.name)}
+                  {...register(field.name as any)}
                   placeholder={field.placeholder}
-                  className={`mt-1 ${errors[field.name] ? 'border-red-500' : ''}`}
+                  className={`mt-1 ${(errors as any)[field.name] ? 'border-red-500' : ''}`}
                   min={field.min}
                   max={field.max}
                   step={field.type === 'number' ? (field.name === 'unit_price' ? '0.01' : '1') : undefined}
                   required={field.required}
                 />
               )}
-              {errors[field.name] && (
+              {(errors as any)[field.name] && (
                 <p className="text-red-500 text-sm mt-1">
-                  {errors[field.name]?.message as string}
+                  {(errors as any)[field.name]?.message as string}
                 </p>
               )}
             </div>
