@@ -65,7 +65,7 @@ export async function generatePdfReport(reportData: ReportData): Promise<Buffer>
     
     // Fallback: return a simple text-based report if PDF generation fails
     console.log('Falling back to text-based report');
-    const textReport = generateTextReport(reportData);
+    const textReport = generateTextReport(reportData); 
     return Buffer.from(textReport, 'utf-8');
   }
 }
