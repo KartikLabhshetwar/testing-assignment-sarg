@@ -37,7 +37,21 @@ export function CreateModal({ isOpen, onClose, onSubmit, title, schema, fields }
     watch
   } = useForm({
     resolver: zodResolver(schema),
-    mode: 'onBlur'
+    mode: 'onBlur',
+    defaultValues: {
+      discount_percentage: 0,
+      quantity: 1,
+      unit_price: '',
+      customer_name: '',
+      customer_email: '',
+      customer_phone: '',
+      product_name: '',
+      product_sku: '',
+      payment_method: '',
+      order_date: new Date().toISOString().split('T')[0],
+      delivery_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 7 days from now
+      region: ''
+    }
   });
 
   const onFormSubmit = async (data: any) => {
@@ -100,6 +114,8 @@ export function CreateModal({ isOpen, onClose, onSubmit, title, schema, fields }
                   className={`mt-1 ${errors[field.name] ? 'border-red-500' : ''}`}
                   min={field.min}
                   max={field.max}
+                  step={field.type === 'number' ? (field.name === 'unit_price' ? '0.01' : '1') : undefined}
+                  required={field.required}
                 />
               )}
               {errors[field.name] && (

@@ -248,7 +248,7 @@ export default function InventoryPage() {
         params.append('filter', JSON.stringify(filterObj));
       }
 
-      const response = await fetch(`http://localhost:3000/api/inventory?${params}`);
+      const response = await fetch(`/api/inventory?${params}`);
       const result = await response.json();
 
       setData(result.data);
@@ -266,7 +266,7 @@ export default function InventoryPage() {
     try {
       console.log('Deleting inventory records with IDs:', ids);
       
-      const response = await fetch('http://localhost:3000/api/inventory/bulk', {
+      const response = await fetch('/api/inventory/bulk', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -320,7 +320,7 @@ export default function InventoryPage() {
       
       console.log('Processed inventory data:', inventoryData);
       
-      const response = await fetch('http://localhost:3000/api/inventory', {
+      const response = await fetch('/api/inventory', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -405,7 +405,7 @@ export default function InventoryPage() {
         onDelete={handleDelete}
         onEdit={handleEdit}
         onCreate={handleCreate}
-        apiEndpoint="http://localhost:3000/api/inventory"
+        apiEndpoint="/api/inventory"
       />
 
       <CreateModal

@@ -223,7 +223,7 @@ export default function SalesPage() {
         params.append('filter', JSON.stringify(filterObj));
       }
 
-      const response = await fetch(`http://localhost:3000/api/sales?${params}`);
+      const response = await fetch(`/api/sales?${params}`);
       const result = await response.json();
 
       setData(result.data);
@@ -241,7 +241,7 @@ export default function SalesPage() {
     try {
       console.log('Deleting records with IDs:', ids);
       
-      const response = await fetch('http://localhost:3000/api/sales/bulk', {
+      const response = await fetch('/api/sales/bulk', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -296,7 +296,7 @@ export default function SalesPage() {
       
       console.log('Processed sales data:', salesData);
       
-      const response = await fetch('http://localhost:3000/api/sales', {
+      const response = await fetch('/api/sales', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -353,7 +353,7 @@ export default function SalesPage() {
         onDelete={handleDelete}
         onEdit={handleEdit}
         onCreate={handleCreate}
-        apiEndpoint="http://localhost:3000/api/sales"
+        apiEndpoint="/api/sales"
       />
 
       <CreateModal

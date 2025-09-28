@@ -3,21 +3,18 @@
   "private": true,
   "type": "module",
   "workspaces": [
-    "apps/*",
-    "packages/*"
+    "apps/*"
   ],
   "scripts": {
-    "dev": "turbo dev",
-    "build": "turbo build",
-    "check-types": "turbo check-types",
-    "dev:native": "turbo -F native dev",
-    "dev:web": "turbo -F web dev",
-    "dev:server": "turbo -F server dev",
-    "db:push": "turbo -F server db:push",
-    "db:studio": "turbo -F server db:studio",
-    "db:generate": "turbo -F server db:generate",
-    "db:migrate": "turbo -F server db:migrate",
-    "postinstall": "turbo -F server db:generate"
+    "dev": "cd apps/web && pnpm run dev",
+    "build": "cd apps/web && pnpm run build",
+    "start": "cd apps/web && pnpm run start",
+    "db:push": "cd apps/web && pnpm run db:push",
+    "db:studio": "cd apps/web && pnpm run db:studio",
+    "db:generate": "cd apps/web && pnpm run db:generate",
+    "db:migrate": "cd apps/web && pnpm run db:migrate",
+    "db:seed": "cd apps/web && pnpm run db:seed",
+    "postinstall": "cd apps/web && pnpm run db:generate"
   },
   "dependencies": {},
   "devDependencies": {

@@ -1,17 +1,21 @@
 {
   "version": 2,
-  "buildCommand": "pnpm run db:generate && pnpm run build",
+  "buildCommand": "cd apps/web && pnpm run db:generate && pnpm run build",
   "installCommand": "pnpm install --no-frozen-lockfile",
   "outputDirectory": "apps/web/.next",
+  "framework": "nextjs",
   "functions": {
-    "apps/server/src/app/api/**/*.ts": {
-      "runtime": "nodejs18.x"
+    "apps/web/src/app/api/**/*.ts": {
+      "runtime": "nodejs20.x",
+      "maxDuration": 30
     }
   },
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/apps/server/src/app/api/$1"
-    }
-  ]
+  "env": {
+    "DATABASE_URL": "@database_url",
+    "NEXTAUTH_SECRET": "@nextauth_secret", 
+    "NEXTAUTH_URL": "@nextauth_url",
+    "GMAIL_USER": "@gmail_user",
+    "GMAIL_APP_PASSWORD": "@gmail_app_password",
+    "REPORT_RECIPIENT": "@report_recipient"
+  }
 }

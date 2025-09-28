@@ -43,7 +43,7 @@ export default function ReportsPage() {
 
   const fetchEmailLogs = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/reports/manualSend?limit=10');
+      const response = await fetch('/api/reports/manualSend?limit=10');
       const data = await response.json();
       setEmailLogs(data.logs || []);
     } catch (error) {
@@ -53,7 +53,7 @@ export default function ReportsPage() {
 
   const fetchCronStatus = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/crons/sendReport?action=status');
+      const response = await fetch('/api/crons/sendReport?action=status');
       const data = await response.json();
       setCronStatus(data);
     } catch (error) {
@@ -76,7 +76,7 @@ export default function ReportsPage() {
   const handleManualSend = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:3000/api/reports/manualSend', {
+      const response = await fetch('/api/reports/manualSend', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -104,8 +104,8 @@ export default function ReportsPage() {
   const handleCronAction = async (action: 'start' | 'stop' | 'test') => {
     try {
       const url = action === 'test' 
-        ? 'http://localhost:3000/api/crons/sendReport?action=test'
-        : `http://localhost:3000/api/crons/sendReport?action=${action}`;
+        ? '/api/crons/sendReport?action=test'
+        : `/api/crons/sendReport?action=${action}`;
         
       const response = await fetch(url);
       const result = await response.json();

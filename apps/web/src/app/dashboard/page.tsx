@@ -42,8 +42,8 @@ export default function DashboardPage() {
   const fetchDashboardData = async () => {
     try {
       const [salesResponse, inventoryResponse] = await Promise.all([
-        fetch('http://localhost:3000/api/sales?pageSize=10'),
-        fetch('http://localhost:3000/api/inventory?pageSize=10'),
+        fetch('/api/sales?pageSize=10'),
+        fetch('/api/inventory?pageSize=10'),
       ]);
 
       const salesData = await salesResponse.json();

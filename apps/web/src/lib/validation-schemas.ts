@@ -2,20 +2,20 @@ import { z } from 'zod';
 
 // Sales validation schema
 export const salesCreateSchema = z.object({
-  customer_name: z.string().min(1, 'Customer name is required').max(100, 'Name too long'),
-  customer_email: z.string().email('Invalid email address'),
-  customer_phone: z.string().min(10, 'Phone number must be at least 10 digits').max(15, 'Phone number too long'),
-  product_name: z.string().min(1, 'Product name is required').max(200, 'Product name too long'),
-  product_sku: z.string().min(1, 'Product SKU is required').max(50, 'SKU too long'),
-  quantity: z.coerce.number().min(1, 'Quantity must be at least 1').max(1000, 'Quantity too high'),
-  unit_price: z.coerce.number().min(0.01, 'Unit price must be greater than 0').max(999999.99, 'Price too high'),
-  discount_percentage: z.coerce.number().min(0, 'Discount cannot be negative').max(100, 'Discount cannot exceed 100%'),
-  payment_method: z.string().refine((val) => ['Cash', 'Card', 'Online'].includes(val), {
+  customer_name: z.string().trim().min(1, 'Customer name is required').max(100, 'Name too long'),
+  customer_email: z.string().trim().email('Invalid email address'),
+  customer_phone: z.string().trim().min(10, 'Phone number must be at least 10 digits').max(15, 'Phone number too long'),
+  product_name: z.string().trim().min(1, 'Product name is required').max(200, 'Product name too long'),
+  product_sku: z.string().trim().min(1, 'Product SKU is required').max(50, 'SKU too long'),
+  quantity: z.union([z.string(), z.number()]).pipe(z.coerce.number().min(1, 'Quantity must be at least 1').max(1000, 'Quantity too high')),
+  unit_price: z.union([z.string(), z.number()]).pipe(z.coerce.number().min(0.01, 'Unit price must be greater than 0').max(999999.99, 'Price too high')),
+  discount_percentage: z.union([z.string(), z.number()]).pipe(z.coerce.number().min(0, 'Discount cannot be negative').max(100, 'Discount cannot exceed 100%')).default(0),
+  payment_method: z.string().min(1, 'Please select a payment method').refine((val) => ['Cash', 'Card', 'Online'].includes(val), {
     message: 'Please select a valid payment method (Cash, Card, or Online)'
   }),
   order_date: z.string().min(1, 'Order date is required'),
   delivery_date: z.string().min(1, 'Delivery date is required'),
-  region: z.string().refine((val) => ['North', 'South', 'East', 'West'].includes(val), {
+  region: z.string().min(1, 'Please select a region').refine((val) => ['North', 'South', 'East', 'West'].includes(val), {
     message: 'Please select a valid region (North, South, East, or West)'
   })
 }).refine((data) => {
@@ -58,14 +58,14 @@ export const inventoryCreateSchema = z.object({
 
 // Field configurations for forms
 export const salesFields = [
-  { name: 'customer_name', label: 'Customer Name', type: 'text' as const, required: true, placeholder: 'Enter customer name' },
-  { name: 'customer_email', label: 'Email', type: 'email' as const, required: true, placeholder: 'customer@example.com' },
-  { name: 'customer_phone', label: 'Phone', type: 'tel' as const, required: true, placeholder: '+1 (555) 123-4567' },
-  { name: 'product_name', label: 'Product Name', type: 'text' as const, required: true, placeholder: 'Enter product name' },
+  { name: 'customer_name', label: 'Customer Name', type: 'text' as const, required: true, placeholder: 'John Doe' },
+  { name: 'customer_email', label: 'Email', type: 'email' as const, required: true, placeholder: 'john.doe@example.com' },
+  { name: 'customer_phone', label: 'Phone', type: 'tel' as const, required: true, placeholder: '1234567890' },
+  { name: 'product_name', label: 'Product Name', type: 'text' as const, required: true, placeholder: 'Laptop Computer' },
   { name: 'product_sku', label: 'Product SKU', type: 'text' as const, required: true, placeholder: 'PROD-12345' },
   { name: 'quantity', label: 'Quantity', type: 'number' as const, required: true, min: 1, max: 1000, placeholder: '1' },
-  { name: 'unit_price', label: 'Unit Price', type: 'number' as const, required: true, min: 0.01, max: 999999.99, placeholder: '99.99' },
-  { name: 'discount_percentage', label: 'Discount %', type: 'number' as const, required: true, min: 0, max: 100, placeholder: '10' },
+  { name: 'unit_price', label: 'Unit Price ($)', type: 'number' as const, required: true, min: 0.01, max: 999999.99, placeholder: '99.99' },
+  { name: 'discount_percentage', label: 'Discount %', type: 'number' as const, required: false, min: 0, max: 100, placeholder: '0' },
   { name: 'payment_method', label: 'Payment Method', type: 'select' as const, required: true, options: ['Cash', 'Card', 'Online'], placeholder: 'Select payment method' },
   { name: 'order_date', label: 'Order Date', type: 'date' as const, required: true },
   { name: 'delivery_date', label: 'Delivery Date', type: 'date' as const, required: true },
