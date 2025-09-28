@@ -115,14 +115,14 @@ export default function ReportsPage() {
             Automated Reporting Status
           </CardTitle>
           <CardDescription>
-            Hourly reports are automatically generated and emailed to hello@sarg.io
+            Daily reports are automatically generated and emailed to hello@sarg.io at 9:00 AM UTC
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div className="flex items-center space-x-2">
               <Label>Schedule:</Label>
-              <span className="text-sm font-mono">Every hour at minute 0</span>
+              <span className="text-sm font-mono">Daily at 9:00 AM UTC</span>
             </div>
             <div className="flex items-center space-x-2">
               <Label>Status:</Label>

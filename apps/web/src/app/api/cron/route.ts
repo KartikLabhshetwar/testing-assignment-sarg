@@ -25,9 +25,9 @@ export async function GET(request: NextRequest) {
     // Send email
     const emailResult = await sendEmail({
       to: process.env.REPORT_RECIPIENT || 'hello@sarg.io',
-      subject: `Hourly Business Report - ${new Date().toISOString()}`,
+      subject: `Daily Business Report - ${new Date().toISOString().split('T')[0]}`,
       attachments: [{
-        filename: `business-report-${Date.now()}.pdf`,
+        filename: `daily-business-report-${new Date().toISOString().split('T')[0]}.pdf`,
         content: pdfBuffer,
         contentType: 'application/pdf'
       }]
@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
     await prisma.emailLogs.create({
       data: {
         to: process.env.REPORT_RECIPIENT || 'hello@sarg.io',
-        subject: `Hourly Business Report - ${new Date().toISOString()}`,
+        subject: `Daily Business Report - ${new Date().toISOString().split('T')[0]}`,
         status: emailResult.success ? 'sent' : 'failed',
         error: emailResult.error || null,
         timestamp: new Date()
@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
       await prisma.emailLogs.create({
         data: {
           to: process.env.REPORT_RECIPIENT || 'hello@sarg.io',
-          subject: `Hourly Business Report - ${new Date().toISOString()}`,
+          subject: `Daily Business Report - ${new Date().toISOString().split('T')[0]}`,
           status: 'failed',
           error: error instanceof Error ? error.message : 'Unknown error',
           timestamp: new Date()
