@@ -2,7 +2,7 @@
   "version": 2,
   "buildCommand": "pnpm run build",
   "installCommand": "pnpm install --frozen-lockfile",
-  "outputDirectory": "apps/web/.next",
+  "outputDirectory": ".next",
   "framework": "nextjs",
   "functions": {
     "apps/web/src/app/api/**/*.ts": {
@@ -12,7 +12,7 @@
   },
   "crons": [
     {
-      "path": "/api/cron",
+      "path": "/api/cron/sendReport",
       "schedule": "0 9 * * *"
     }
   ]

@@ -77,7 +77,7 @@ export default function ReportsPage() {
   const handleTestCron = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/cron', {
+      const response = await fetch('/api/cron/sendReport', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${process.env.NEXT_PUBLIC_CRON_SECRET || 'test-secret'}`,
