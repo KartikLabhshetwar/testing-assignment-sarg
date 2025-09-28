@@ -14,13 +14,23 @@ interface EmailOptions {
 
 export async function sendEmail(options: EmailOptions) {
   try {
-    const transporter = nodemailer.createTransporter({
+    // Check if email credentials are set
+    if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
+      throw new Error('Gmail credentials not configured. Please set GMAIL_USER and GMAIL_APP_PASSWORD environment variables.');
+    }
+
+    console.log('Creating email transporter...');
+    const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
         user: process.env.GMAIL_USER,
         pass: process.env.GMAIL_APP_PASSWORD,
       },
     });
+
+    // Verify transporter configuration
+    await transporter.verify();
+    console.log('Email transporter verified successfully');
 
     const mailOptions = {
       from: process.env.GMAIL_USER,
@@ -31,7 +41,9 @@ export async function sendEmail(options: EmailOptions) {
       attachments: options.attachments || [],
     };
 
+    console.log('Sending email to:', options.to);
     const result = await transporter.sendMail(mailOptions);
+    console.log('Email sent successfully:', result.messageId);
     
     return {
       success: true,
