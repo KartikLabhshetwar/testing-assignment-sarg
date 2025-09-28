@@ -179,14 +179,19 @@ CSV files are attached for detailed analysis.
     });
     
     // Log the email send attempt
-    await prisma.emailLogs.create({
-      data: {
-        to: process.env.REPORT_RECIPIENT || 'hello@sarg.io',
-        subject: emailSubject,
-        status: emailResult.success ? 'sent' : 'failed',
-        error: emailResult.error || null,
-      },
-    });
+    try {
+      await prisma.emailLogs.create({
+        data: {
+          to: process.env.REPORT_RECIPIENT || 'nerdkartik17@gmail.com',
+          subject: emailSubject,
+          status: emailResult.success ? 'sent' : 'failed',
+          error: emailResult.error || null,
+        },
+      });
+    } catch (logError) {
+      console.error('Failed to log email attempt:', logError);
+      // Continue execution even if logging fails
+    }
     
     console.log('Hourly report sent successfully:', emailResult);
     
@@ -217,6 +222,7 @@ CSV files are attached for detailed analysis.
       });
     } catch (logError) {
       console.error('Failed to log error:', logError);
+      // Continue execution even if logging fails
     }
     
     return NextResponse.json(

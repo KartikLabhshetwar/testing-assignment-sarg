@@ -76,10 +76,24 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '10');
     
     const { prisma } = await import('@/lib/prisma');
-    const recentLogs = await prisma.emailLogs.findMany({
-      orderBy: { timestamp: 'desc' },
-      take: limit,
-    });
+    
+    // Try to fetch logs, handle missing timestamp column gracefully
+    let recentLogs;
+    try {
+      recentLogs = await prisma.emailLogs.findMany({
+        orderBy: { timestamp: 'desc' },
+        take: limit,
+      });
+    } catch (dbError: any) {
+      if (dbError.message?.includes('timestamp')) {
+        // Fallback: fetch without ordering by timestamp
+        recentLogs = await prisma.emailLogs.findMany({
+          take: limit,
+        });
+      } else {
+        throw dbError;
+      }
+    }
     
     return NextResponse.json({
       logs: recentLogs,
